@@ -1,0 +1,381 @@
+Processing Notes:
+program written as list of statements is called a static sketch:
+	-series of functions are used to perform tasks or create a single image without any animation or interaction
+	
+-interactive programs are drawn as a series of frames which you create by calling setup() or draw() built in functions that are called automiatically:
+	-setup() runs once at the beginning, draw() runs continuously
+	-draw() used for animation
+	-mousePressed() called whenever mouse is presssed
+
+-saving to image:
+	-saveFrame("example.png")
+	-saveFrame("output-####.png", 1234)
+	
+size(): sets the global variables width and height:
+	-for objects dependent on the size of the screen alway suse the width and height variables instead of a number:
+		-ex: ellipse(width/2, height/2, 50, 50); // always will put in the middle regardless of size changes.
+		
+you can write directly to a pdf file via :
+	 size(400, 400, PDF, "output.pdf"); 
+or you can use different renderers: more of that will be understood as I learn.
+
+
+loading data:
+	loadImage(): reads image into PIimage object, container for image data in processing.
+	loadStrings(): reads textfile into array of string objects
+	-both functions expect to find a file inside a folder named data which is a subdirectory of the sketch folder.
+	
+-An object in processing is an entity that has both data and functionality.
+
+-Class is a template for building actual instances of objects, ie cookie cutter to the object's cookkie.
+
+-Pixels in windows have 8 possiblie neighbors.
+
+-Ways to use the random() function with probability in code:
+	-one technique: fill array swith selection of numbers, some of which are repeated, and have random pick them. The numbers which are repeated will have a greater probability of being picked.
+	-pick a random number in a range and only do the task if the random number is below or above a certain threshold.
+	
+-to do normal distribution in processing use random class from java.util
+
+-Perlin Noise:
+`	-algorithm invented by ken perlin for movie tron. its  anoise fucntion designed to create procedural textures for computer-generated effects.
+	-built in procesing funciton called noise()
+		-takes, one, two, or three arguments as noise is computed in one, two or three dimensions.,
+	-1 dimensional perolin noise can be considered as a linear sequence of values over time.
+		-to access a particular noise value in processing we have to pass a specific moment in time to the noise function.
+		-to access different values from the noise function you must increment the time variable t.
+			-larger incrememnts result in more noise as the values will be more random.
+			-shorter increments in time will be more smooth.
+	-once you have the noise value you need to map it to the range you want.
+	-deterministic function in the sense that it gives the same result for a specific time t each and every time. As such if you want to use the noise function for both x and y you should start y at an arbitrary different
+	inital value than x in order to ensure that x and y are not always equal.
+	-two dimensional noise. values are no longer along a linear path but along a grid. ie a graph paper with numbers written into each cell.
+	
+-map():
+	-takes 5 arguments:
+		-1st: value you wnat to map, n/noise from 1d space in the interaction with perlin noise.
+		-2nd 3rd, value's current range of minimum and maximum
+		-4th, 5th: new minimum of desired range and new maximum of desired range.
+		
+		
+Chapter 1: Vectors
+-Referring to Euclidean Vectors: aka entity that has both magnitude and direction.
+	-typically drawn as an arrow, direction = where arrow is pointing and magnitude = length of arrow.
+
+-PVector class in processing used to represent vectors:
+	-mathematical operations implemented:
+		-add()
+		-sub()
+		-mult(): Multiplying vectors: Essentailly scaling a vector. We multiply a vector by a scalar not a nother vector. You scale the components of the vector by that scalar value.
+		-div()
+		-mag(): calculates magnitude of a vectors
+			-length of a vector.
+			-mag = sqrt(vx * vx + vy * vy)
+		-setMag(): sets the magnitude of a vectors
+		-normalize() : normalize the vector to a unit lenght of 1
+			-standard vector has a length of 1. to normalize a vector we take a vector of any length and keeping it pointing in the same direction we change its lenght of 1
+			- unit vector = given vector / magnitude aka divide every component by its magnitude.
+		-limit(): limit the magnitude of a vector
+		-heading2D(): heading of a vector expressed as an angle
+		-rotate(); rotate a 2D vectory by an angle.
+		-lerp(): linear interpolate to another vector.
+		-dist(): euclidean distance between two vectors
+		-angleBetween(): find angle between two vectors
+		- dot(): dot product of two vectors
+		-cross(): cross product of two vectors(only relevant in 3 dimensions)
+		-random2D(); make a random 2D vector
+		-random3D(): make a random 3D vector.
+		
+Moving objects: Vector States:
+	-Location
+	-Velocity
+		-rate of change of locaiton.
+	-Acceleration
+		-rate of change of velocity
+		
+Static vs Non-Static methods:
+	-PVector methods called form the classname itself are static functions. these methods return a vector value and don't change the underlying value of the inputs.
+	-when you call a pvector method from the object instance itself then it will alter the vlaue of the object and not return a new pvector.
+	-PVector has static versions of add(), sub(), mult(), and div()
+
+-Anytime you wnat to calculate a vector based on a rule or a formula you need to compute two things. Magnitude and directoin. 
+	-Diff between mouse and object
+		-dx = mouseX - x 
+		-dy = mouseY - y
+	-Calcualte the directoin. normalize the magnitude to unit vector. then scale that vector by appropriate value (for acceleraiton) and use that vector as the accelerration.
+	
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Chapter 2: Forces
+
+-A vector is the difference between two points 
+-A unit vector is a vector that tells us about direction only 
+
+-Force is a vector that causes an object with mass to accelerate (newtonian definition of force)
+
+-Newtons first law:
+	-An object at rest stays at rest and an object in motion stays in motion at a constant speed and direction unless acted upon by an unbalanced force.
+	-An objects PVector velocity will remain constant if it is in a state of equilibrium.
+
+-Newtons third law:
+	-for every action there is an equal and opposite reaction
+	-Forces always occur in pairs. The two forces are of equal strenght but in opposite directions.
+	-If we calculate a PVector f that is a force of object A on object B we must also aplpy the force- PVector.mult(f,-1);--- that B exerts on object A.
+
+-Newtons second Law:
+	-force = maass times acceleration.
+		-net force = mass times acceleration
+	-acceleraiton = to sum of all forces divided by mass.
+	-acceleraiton = force / mass
+		-acceleration is directly proportional to force and inversionally proportional to mass. 
+			-aka harder you get pushed the faster you move (accelerate). bigger you are slower you'll move.
+	-mass = measure of amount of matter in an object ( usually in kg)
+	-weight = force of gravity on an object. w = mass * g (acceleration of gravity), measured in newtons
+		-ie object mass on earth and moon is the same but it has 1/6 the weight on the moon due to the lower gravitational effect.
+	-density = amount of mass per unit of volume.
+
+-Friction:
+	-Dissipative force: One in which the total energy of a system decreases when an object is in motion.
+	-Friction points in the opposite direction of velocity:
+		-in processing take the veolicty vector, normalize it,a nd then multiply it by -1
+	-The magnitude of friction is mu * N. mu is the coefficient of friction, aka how strong the friction force is for a particular surface. higher it is stronger the friciton, lower the lower the force of friction.
+	-N = normal force. Force perpendicular to the objects motion along the surface. Aka gravity pulls the object down into the surface and according to newtons third law the surface pushes back. Greater the gravitational force greater the normal force. 
+	
+	-Friction also occurs whne a body passes through a liquid or gas.
+		-also referred to as viscous force, drag force, fluid resistance.
+		-result is the same as previous friction formula, in the sense that the object slows down, but the way we calculatre is different
+	-Fd = -1/2 * p * v^2 * A * Cd * ^value
+		-Fd = drag force
+		-p = rho greek symbol = density of the liquid (can consider to have value 1)
+		- v = velocity object moving aka velocity.magnitude()
+		-A = frontal area of the object that is pushing through the liquid, ex aerodynamic lambo has less area than volvo
+		-Cd = coefficient of drag, same as coefficient of friction. Constant that determines how strong the drag force is.
+		-^v = velocity unit vector. velocity.normalize(); (its normalized to give the same direction of the velocity and then the -1 at the formula multiplies it to be opposite).
+	
+-Gravitational Attraction
+	-Every object with mass exerts a gravitational force on every other object
+	-F = G * m1 * m2 / r^2 * ^r
+		-F = gravitaitonal force, the vector we want to compute and apply as a force
+		-G = universal gravitational constant = 6.67428 * 10 ^-11 meteres cubed per kilogram per second squared. 
+		-m1, m2 = masses of object 1 and 2
+		-^r = unit vector pointing from object 1 to object 2
+		-r^2 refers to the distance between the objects squared. divide because the closer the objects are the stronger the force. farther they are the weaker the force. 
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Chapter 3: Oscillation
+
+-Angles are measured in radians in processing:
+	-radian is unit of measurement for angles defined by the ratio of the length of the arc of a circle to the radius of that circle
+	-one radian is the angle at which that ratio = 1
+	-180 degrees = pi radians, 360 degrees = 2*pi radians, 90 degrees = PI / 2 radians etc.
+	-formula
+		-radians = 2 * Pi * (degrees / 360);
+		-radians() function that converts degrees to radians: radians(60) = radian value for 60 degrees.
+
+-Pi = ratio of circles circumference to its diamater
+
+-Trignometry, sohcahtoa
+	-soh : sine = opposite / hypotenuse
+	-cah : cosine = adjacent / hypotenuse
+	-toa : tangent = opposite / adjacent 
+	
+	-Hypotenuse is vector arrow,
+		-components x and y are sides of the triangle.
+		-angle is an additional means for specifying the vector's direciton/ heading. 
+	
+	-inverse of these funcitons are used to solve for the angle
+		-arctan function in processing is called atan()
+		-atan2() used to process for directions as sometimes the angle will be calculated the same despite the fact that the vectors may point in different directions 
+		
+-Cartesian Coordinates:
+	-specified by a and y coordinates
+	
+-Polar coordinates:
+	-desfcribes a point in space as an angle of rtation around the origin and a radius from the origin:
+	
+-Coordinates in terms of vectors:
+	-cartesian:
+		-x, y components of a vector
+	-polar:
+		-magnitude (length) and direction (angle) of a vector 
+	
+-sine(theta/angle)  y / r  or y = r * sine(theta/ angle)
+-cosine (theta/angle) = x / r or x = r * cosine(theta)
+	-functions in processing = sin() and cos(). take one argument an angle measured in radians. 
+
+-output of the sine function is a smooth curve alternating between -1 and 1.
+	-this type of behavior is known as oscillation
+
+-Oscillation between one point on the screen to another is known as simple harmonic motion. 
+	-simple harmonic motion can be expressed as any location as a function of time with 2 elements:
+		-amplitude: the distance from the center of motion to either extreme.
+		-Period: amount of time it takes to complete one cycle of motion:
+		-ex: sine function:
+			-amplitude 1 as it oscillates between -1 and 1
+			-Period: 2pi as the pattern repeats every 2 pi radians or 360 degrees.
+			-in processing: amplitude is in pixels
+				-period: measured in frames
+		-frequency: number of cycles per time unit. usually = to 1 divided by period. =
+
+simple harmonic motion formula in processing = amplitude * cos(2pi * framecount/period) #framecount/period is the ratio that4 helps the function keep track of what point in the cycle it is at. 
+
+-the simple harmonic formula can also be viewed as :
+	-float x = amplitude * cos (some value that incrememnts slowly);
+	-period is essentially = 2pi / some value that incrememnts slowly
+
+Pendulum in 2 d space:
+	-You separate the forces of gravity and the pendulum into vectors that make it into right triangles
+	-the pendulum force is perpendicular to the direction the arm is swinging in so it makes a right angle with gravities force and what it allows you to do is use the angle to find out the relationship between the pendulum forc eand gravity:
+		-comes out to be Fp = Fg * sin(theta)
+		-angular velocity = angular veloctiy + angular acceleration
+		-angle = angle + angular velocity 
+
+	-force is related to acceleration. so if force of pendulum is equal to force of gravity times sine of the angle then :
+		-pendulum angular acceleration = acceleration due to gravity * sine (theta) (mass's get cancelled out)
+		-angular acceleration = gravity * sine(theta)
+	
+
+Spring Forces:
+Hooke's Law:
+	-used to calculate the force of a spring
+	-originally stated as "Ut tensio, sic vis" (latin) or "as the extension so the force"
+	-for our purposes:
+		-the force of the spring is directly proportional to the extension of a spring.
+	
+	Mathematically:
+		-Fspring = - k * x
+			-k is constant and essentially used to scale the force, ie (elastic or rigid)
+			-x refers to the displacement of the spring, ie the difference between current length and rest length
+				-rest length defined as the lenght of the spring in a state of equilibrium 
+			
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Chapter 4: Particle Systems
+
+-A particle system is a collection of many minute particles that together represent a fuzzy object. Over a period of time particles are generated into a system, move and change within the system, and die from the system. 
+
+-A particle is an independent body that moves about the screen (for me)
+
+-variables important to a particle:
+	-location
+	-velocity
+	-acceleratoin
+	-lifespan
+	
+-Typical particle systems involve something called an emitter which is essentially the source of the particles and controls the initial settings for the particles, locations, veloctiy, etc.
+
+-Arraylist deletion:
+	-to counter how deleteing objects causes every subsequent element to slide over one spot you could simply iterate backwards through the arraylist 
+	-or use iterator object:
+		-Iterator<T> it = arraylist.iterator(); //arraylist is of type t.
+		-it.hasNext()
+		-it.next();
+		-it.remove()// wont skip the next object does the deleeting for you.
+		
+-Inheritance: allow you to write classes that inherit variabels and functions from another class while implementing its own custom features. 
+	-subclass: child of a superclass, inherits all variable and functions from the parent, can include variables and functios not in the parent. 
+	
+
+-Polymorphism: allows us to consider objects of different types as the same type and store them in a single arraylist. determination of type is done at run time. 
+
+-extends: keyword used to indicate a parent fro the class being defined. classes can only extend one class. classes can extend classes that extend other classes
+
+-super(); calls the constructor in the parent class. aka whatever is done in the parent constructor done in child constructor as well 
+
+-Polymorphism: The ability to treate an object as a member of the specific class or its superclass
+	-refers to the treatment of a single instance of an object in multiple forms
+	
+-PImage: Processing's image abstraction:
+	-tint(255, lifespan); // image equivalent of shape's fill();
+	
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Chapter 5: Physics Libraries
+
+Box2D:
+	-Open Source physics engine
+	-all calculations in the realm of real worlds, not pixels.
+	-Useful library if collisions are involved 
+	-Java library called Jbox2d
+		-processing wrapper by book author called PBox2D
+	
+-Cirlces intersect if distance between them is less than the sum of their radii
+
+-Core elements of a Box2D world:
+	-World: Manages simulation, knows coordinate space and stores list of all elements
+	-Body: Primary element of world. Has location, has velocity
+	-Shape: Keeps track of all necessary collision geometry attached to a body
+	-Fixture: Attaches a shape to a body and sets property such as density friction and restitution
+	-Joint: Acts as a connnection between two bodies or between one body and the world itself.
+	-Vec2: Describes a vector in the Box2D world.
+
+Vec2: Box2D PVector subsitute:
+	-addLocal ot add to a value of the Vec2
+	-add to do add operation and return new vector.
+	-length() instead of mag()
+
+World:
+	-In charge of everything
+	-First thing that needs to be setup.
+	-EX:
+		PBox2D box2d;
+		void setup() {
+			box2d = new PBox2D(this);
+			box2d.createWorld(); // creates a world with default settings. sets default graviety
+		}
+	-can alter gravity by saying box2d.setGravity(xgrav, ygrav)
+
+-For box2d the coordinate system is a standard cartesian one with 0,0 being the center. Processing on the other hand uses a traditional computer graphics coordinate system where (0, 0) is the top left corner. 
+	-thusly if you wnat objects to fall down iwth gravity in Box2D you need to give gravity force with negative y value. 
+
+-Converting to box2d coordinates from normal:
+	-box2d.coordPixelsToWorld(mouseX, mouseY); // puts mouseX, mouseY into Box2D cartesian coordinates
+		-coordWorldToPixels// also exists
+	-scalarPixelsToWorld(float val)
+		-scale dimension from pixels to world
+	-scalarWorldToPixels(float val);
+		-scale dimension from world to pixels 
+		
+-A box2D body is the primary element in the box2D world. 
+	-equivalent to the mover class, the object that moves around in space and experiences forces
+	-does not have geometry, rather you attach box2d shapes to them. 
+
+Steps to build a box2D body:
+	-step 1 define a body:
+		-define the properties you intent to make
+		-BodyDef bd = new BodyDef();
+	-step 2 configure the body definition:
+		-body definition is where specific properties and attributes are set.
+			ex: starting location.
+		-body definition also defines the type of body we want to make:
+			-dynamic
+				-fully simulated body, moves around, collides, responds to forces in environment
+			-static
+				-one that can not move (as if inifnite mass), used for platforms and boundaries
+			-kinematic
+				-can be moved manually by setting its velocity directly.
+				-can be a user controlled object 
+				-can only collide with dynamic bodies, not static/kinematic. 
+		-other types of properties:
+			-fixedRotation: set to true if you want for the body to never rotate
+			-linearDamping, angularDamping, set to decimal values to ensure that the object continuously slows down as if there was friction 
+			-bullet: set to true if it is a fast moving object. Tells the engine that it moves very quickly so that it needs to check its collissions more carefully so that it doesnt jump over another body. 
+	-Step 3 Create the body:
+		-box2d.createBody(bd);
+			-helper function that creates a body object by passing in a bodyDefinition. 
+	
+	-Step 4 Set any other conditions for the body's starting state
+		-if you need to set other conditions like linear velocity or angularVelocity:
+			-body.setLinearVelocity();
+			-body.setAngularVelocity();
+			
+-Box2D.Shape Class
+	-keeps track of all necessary collision gemoetry attached to a body
+	
+		
+
+
+
+
+
